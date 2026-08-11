@@ -10,7 +10,11 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'ls -la'
-                sh 'docker --version || echo "docker not found"'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t docker-dev-stack:latest .'
             }
         }
     }
