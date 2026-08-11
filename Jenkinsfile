@@ -25,14 +25,16 @@ pipeline {
         }
         stage('Flaky Test') {
     steps {
-        script {
-            def result = sh(script: '''#!/bin/bash
-                echo $((RANDOM % 2))
-            ''', returnStdout: true).trim()
-            if (result == '0') {
-                echo 'Test passed this time'
-            } else {
-                error 'Test failed randomly — simulating flaky test!'
+        retry(3) {
+            script {
+                def result = sh(script: '''#!/bin/bash
+                    echo $((RANDOM % 2))
+                ''', returnStdout: true).trim()
+                if (result == '0') {
+                    echo 'Test passed this time'
+                } else {
+                    error 'Test failed randomly — simulating flaky test!'
+                }
             }
         }
     }
