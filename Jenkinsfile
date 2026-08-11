@@ -26,7 +26,9 @@ pipeline {
         stage('Flaky Test') {
     steps {
         script {
-            def result = sh(script: 'echo $((RANDOM % 2))', returnStdout: true).trim()
+            def result = sh(script: '''#!/bin/bash
+                echo $((RANDOM % 2))
+            ''', returnStdout: true).trim()
             if (result == '0') {
                 echo 'Test passed this time'
             } else {
