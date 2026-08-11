@@ -7,6 +7,24 @@ pipeline {
                 echo 'Code already checked out by Jenkins via SCM'
             }
         }
+        stage('Parallel Checks') {
+            parallel {
+                stage('Lint') {
+                    steps {
+                        echo 'Running lint checks...'
+                        sh 'sleep 3'
+                        echo 'Lint passed'
+                    }
+                }
+                stage('Static Analysis') {
+                    steps {
+                        echo 'Running static analysis...'
+                        sh 'sleep 3'
+                        echo 'Static analysis passed'
+                    }
+                }
+            }
+        }
         stage('Docker Build') {
             steps {
                 sh 'docker build -t docker-dev-stack:latest .'
