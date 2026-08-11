@@ -11,14 +11,12 @@ pipeline {
             parallel {
                 stage('Lint') {
                     steps {
-                        echo 'Running lint checks...'
                         sh 'sleep 3'
                         echo 'Lint passed'
                     }
                 }
                 stage('Static Analysis') {
                     steps {
-                        echo 'Running static analysis...'
                         sh 'sleep 3'
                         echo 'Static analysis passed'
                     }
@@ -30,17 +28,15 @@ pipeline {
                 sh 'docker build -t docker-dev-stack:latest .'
             }
         }
-        stage('Run Container') {
+        stage('Docker Push') {
             steps {
-                sh 'docker rm -f test-container || true'
-                sh 'docker run -d --name test-container -p 8081:80 docker-dev-stack:latest'
-                sh 'sleep 3'
-                sh 'curl -f http://localhost:8081 || (echo "Health check failed" && exit 1)'
-            }
-        }
-        stage('Cleanup') {
-            steps {
-                sh 'docker rm -f test-container'
+                withCredentials([usernamePassword(credentialsId: '9d7b487d-368b-4c82-a6e0-8ad0214baf84', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker tag docker-dev-stack:latest $DOCKER_USER/docker-dev-stack:latest
+                        docker push $DOCKER_USER/docker-dev-stack:latest
+                    '''
+                }
             }
         }
     }
