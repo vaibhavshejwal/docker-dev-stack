@@ -23,6 +23,18 @@ pipeline {
                 }
             }
         }
+        stage('Flaky Test') {
+    steps {
+        script {
+            def result = sh(script: 'echo $((RANDOM % 2))', returnStdout: true).trim()
+            if (result == '0') {
+                echo 'Test passed this time'
+            } else {
+                error 'Test failed randomly — simulating flaky test!'
+            }
+        }
+    }
+}
         stage('Docker Build') {
             steps {
                 sh 'docker build -t docker-dev-stack:latest .'
